@@ -1,291 +1,751 @@
-# 💡 Awesome Developer GPT Prompts
+# AI-Assisted Development: A Practical Guide
 
-<img src="https://img.shields.io/badge/status-work_in_progress-green" /> <img src="https://img.shields.io/badge/gpt-4o+-blue" />
+Thoughts on incorporating AI coding agents into real engineering workflows and what I learned so far.
 
-Welcome to **Awesome Developer GPT Prompts** – a curated collection of prompts designed specifically to enhance your developer workflow and productivity. Whether you're brainstorming complex logic, writing documentation, or looking to optimize your code, these prompts aim to provide quick and actionable guidance.
+I'm currently introducing AI-assisted development at the company I work at. This repository is my attempt to organize what I know, what I'm still figuring out, and what resources helped me the most.
 
-Feel free to explore the prompts, submit your own ideas, and contribute to the repo. Let’s collaborate and create a go-to resource for every developer’s GPT-driven toolkit!
+## Table of Contents
 
-This repo is still in WIP.
+- [Why Should You Care](#why-should-you-care)
+- [The Risks Are Real](#the-risks-are-real)
+- [Engineering Skills Still Matter](#engineering-skills-still-matter)
+- [Understanding LLMs](#understanding-llms)
+- [How Agents Actually Work](#how-agents-actually-work)
+- [Context Management Is Everything](#context-management-is-everything)
+- [Writing Good Prompts for Existing Agents](#writing-good-prompts-for-existing-agents)
+- [What AI Makes Possible](#what-ai-makes-possible)
+- [Credits and References](#credits-and-references)
+- [License](#license)
 
-# 📍 Preparations
+## Why Should You Care
 
-I highly recommend to create a separate project in ChatGPT and use prompts below as instructions. To understand how to create a project, use this [**link**](https://help.openai.com/en/articles/10169521-using-projects-in-chatgpt).
+Nolan Lawson [wrote a great piece](https://nolanlawson.com/2026/02/07/we-mourn-our-craft/) about the emotional side of this shift. He described it honestly: "The worst fact about these tools is that they work." He is not celebrating the new world, but he is also not resisting it.
 
-```text
-You are an all-in-one expert software architect with the following characteristics:
+Whether you like it or not, AI coding tools are changing how we work. Your junior colleagues are already using Cursor, Claude Code, Copilot. They write code faster. Not always better, but faster. And the tools keep improving.
 
-1. Role & Responsibilities:
-   - Principal Architect responsible for designing end-to-end solutions for a wide variety of applications (web, mobile, enterprise, data platforms, AI/ML systems, etc.).
-   - Overseer of best practices in software development, machine learning lifecycle, data engineering, DevOps, cybersecurity, QA, and documentation.
-   - Mentor and thought leader for development teams, providing guidance on coding standards, architectural patterns, and emerging technologies.
+The question is not "should I use AI for coding?" anymore. The question is: how do I use it without making a mess?
 
-2. Qualifications & Experience:
-   - 10+ years of full-stack development experience across multiple languages and frameworks (e.g., Java, Python, JavaScript/TypeScript, C#, Go, etc.).
-   - Deep expertise in cloud platforms (AWS, Azure, GCP), container orchestration (Docker, Kubernetes), and microservices architecture.
-   - Advanced knowledge of data pipelines, ETL, database design (SQL & NoSQL), and data warehousing solutions (e.g., Snowflake, Redshift, BigQuery).
-   - Proficiency in machine learning frameworks (TensorFlow, PyTorch, scikit-learn) and MLOps best practices.
-   - Experience in writing and refining prompts for LLMs (like ChatGPT) and integrating AI services into existing systems.
+## The Risks Are Real
 
-3. Architectural & Technical Approaches:
-   - Employ proven architectural patterns: microservices, serverless, event-driven, hexagonal/clean architecture, etc.
-   - Prioritize scalability, reliability, and security at every layer.
-   - Utilize DevOps principles (CI/CD pipelines, Infrastructure as Code, automated testing, containerization).
-   - Implement robust QA strategies, from unit testing to integration, performance, and security testing.
-   - Practice Agile/Scrum or DevOps-oriented workflows for rapid iteration and continuous improvement.
+Jake Nations wrote about this in [Vibe Coding Our Way to Disaster](https://www.arthropod.software/p/vibe-coding-our-way-to-disaster). His argument is based on Rich Hickey's ideas about simplicity vs. ease. The short version: vibe coding (just chatting with AI and letting it write whatever) is choosing ease over simplicity. It feels productive but creates tangled, complex systems.
 
-4. Knowledge Areas & Special Focus:
-   - Software Engineering: SOLID principles, design patterns, code review best practices, clean coding.
-   - Machine Learning: data collection, preprocessing, model training, hyperparameter tuning, deployment, and monitoring.
-   - Prompt Engineering: design and optimize prompts for large language models, ensuring reliability, accuracy, and interpretability.
-   - Quality Assurance: automated testing frameworks (JUnit, pytest, Cypress, etc.), QA tools, best practices for test coverage.
-   - Security & Compliance: knowledge of OWASP best practices, encryption, identity management, and relevant regulations (GDPR, HIPAA, PCI-DSS).
+### Vibe Coding vs. Disciplined AI Coding
 
-5. Constraints & Goals:
-   - You are designing architectures for different types of applications. Each solution must address business requirements, scalability, performance, security, maintainability, and cost-effectiveness.
-   - Architecture should include diagrams or detailed text-based breakdowns of components, data flow, and integration points.
-   - Provide justification for design decisions, highlight potential trade-offs, and recommend best-in-class technologies.
+```
+VIBE CODING (ease)                         DISCIPLINED AI CODING (simplicity)
 
-6. Communication Style:
-   - Always explain the reasoning behind recommendations and design patterns.
-   - Present information in a structured, step-by-step manner, with headings or bullet points where possible.
-   - Use concise, clear, and technically sound language suitable for stakeholders of varying technical backgrounds.
+You: "make a login page"                   You: research auth flow in our codebase
+  AI writes 200 lines                        AI maps existing patterns
+You: "it doesn't work, fix it"              You: review research, plan approach
+  AI rewrites 150 lines                      AI creates implementation plan
+You: "now add validation"                  You: review plan, approve
+  AI patches on top of patches               AI implements following the plan
+You: "why is everything broken?"           You: review code, run tests
+  AI apologizes, rewrites again              Working code that fits the codebase
 
-Given these characteristics, your task is to produce detailed architectural designs and strategies for the requested application or system. You may ask clarifying questions where necessary, enumerate assumptions, outline technology choices, propose a high-level design, and then delve into an in-depth explanation of each layer/component.
+Result: tangled mess of corrections        Result: clean code that follows
+        buried in context                          existing patterns
 ```
 
-## 📒 Prompts
+The key problems with naive AI coding:
 
-### Daily routine
+- **Context complexity becomes code complexity.** When you have long conversations with AI, corrections and clarifications pile up. The AI starts making connections between unrelated parts of the conversation. Your code becomes a reflection of that mess.
+- **AI amplifies your approach.** If you rush to code without understanding the problem, AI helps you build the wrong thing faster. If you think first, AI becomes a powerful implementation tool.
+- **Most critical bugs come from misunderstanding the problem, not from implementation errors.** This was true before AI, and it is even more true now when AI can generate hundreds of lines of code from a vague prompt.
+- **The Stanford study** found that AI tools often lead to rework. Code shipped with AI one week gets rewritten next week. In large established codebases, AI can actually make developers less productive.
 
-#### Refactoring & Code Cleanup
+This is not a reason to avoid AI tools. It is a reason to use them with discipline.
 
-```text
- Please refactor the following {Language} code that uses the {Framework} framework. 
-- Use {Plugin/Tool} (if applicable) for linting or static analysis.
-- Retain current functionality.
+## Engineering Skills Still Matter
 
-[PASTE YOUR CODE HERE]
+AI does not replace the need to understand your system. You still need to:
+
+- Know how your codebase works before asking AI to change it
+- Review generated code with the same rigor as human-written code
+- Design systems that are simple, not just easy to generate
+- Understand when the AI is wrong (and it will be wrong sometimes)
+
+As Dex Horthy from [HumanLayer](https://humanlayer.dev) puts it in the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) guide: the best production AI agents are "comprised of mostly just software." The LLM is a powerful component, but the engineering around it is what makes it reliable.
+
+### The Leverage Pyramid
+
+Where you spend your human attention matters. A mistake at the research level cascades into everything below it.
+
+```
+                    /\
+                   /  \          A bad line of RESEARCH
+                  / re \         = misunderstanding the codebase
+                 / search\       = thousands of bad lines of code
+                /----------\
+               /            \    A bad line of a PLAN
+              /    plan      \   = wrong approach
+             /                \  = hundreds of bad lines of code
+            /------------------\
+           /                    \
+          /   implementation     \  A bad line of CODE
+         /                        \ = a bad line of code
+        /__________________________\
+
+        HUMAN EFFORT GOES HERE ^^^
+        (review research and plans, not just code)
 ```
 
-#### Performance Optimization
+You need to be able to read the research AI produces and tell when it is wrong. You need to be able to look at a plan and spot the flaw. The human review at research and planning stages is the highest-leverage intervention in the whole process.
 
-```text
-Our application is experiencing slow response times under heavy load. 
-- We use Language} and {Framework}.
-- Identify bottlenecks and propose specific changes to improve performance.
-- Consider using {Plugin/Tool} (e.g., profilers, performance analyzers) if relevant.
-- Provide insights on caching, concurrency, or data structure improvements.
-- Explain trade-offs and ensure the changes remain cost-effective.
+## Understanding LLMs
 
-[OPTIONAL: SHARE CODE SNIPPETS OR SCENARIO]
+Before we talk about agents, it helps to understand what an LLM actually is.
+
+### LLM Is a Stateless Function
+
+An LLM is a function. You give it text, it gives you text back. That is it.
+
+```
+f(input_text) → output_text
 ```
 
-#### Code Quality & Best Practices Review
+There is no memory between calls. There is no hidden state. Every time you send a message, the model sees the entire conversation from scratch. What feels like a "conversation" is actually your client re-sending the full history every single time.
 
-```text
-Review the following code written using {Language} and {Framework} for:
-2. Clean coding principles (naming, structure, readability).
-3. Best practices and design patterns.
-4. Potential bugs or antipatterns.
-5. Opportunities to simplify or modularize the code.
-6. Compliance with {Plugin/Tool} (e.g., ESLint, Checkstyle) configurations.
-
-[PASTE YOUR CODE HERE]
+```
+Call 1:  f("What is 2+2?")                                         → "4"
+Call 2:  f("What is 2+2?" + "4" + "Now multiply by 3")             → "12"
+Call 3:  f("What is 2+2?" + "4" + "Now multiply by 3" + "12"
+           + "What was the original number?")                       → "4"
 ```
 
-#### Design Pattern Implementation
+The model did not "remember" that the original number was 4. It saw the full conversation in the input and found the answer there. If you removed the earlier messages, it would have no idea.
 
-```text
-We have a codebase in {Language} using {Framework}, and we want to introduce the {Design Pattern} pattern (e.g., Factory, Singleton, Observer, etc.).
-- Show how to refactor or integrate the {Design Pattern} into our existing code.
-- Explain the benefits and potential trade-offs.
-- Suggest any relevant {Plugin/Tool} or library that might simplify this pattern.
+This has practical consequences:
 
-[OPTIONAL: PASTE YOUR CODE OR EXPLAIN YOUR CURRENT ARCHITECTURE]
+- **Context is everything.** The model only knows what you put in the input. If you do not include it, it does not exist.
+- **Longer conversations degrade.** Every message adds tokens. At some point the input is so large that the model loses focus on what matters.
+- **You pay for every token, every time.** The full conversation is re-sent on each call. A 50-message conversation means message 1 has been sent 50 times.
+
+### What the Model Actually Sees
+
+When you type a message in ChatGPT or Claude, it looks like a simple chat. Behind the scenes, the API call looks more like this:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  API Call                                               │
+│                                                         │
+│  messages: [                                            │
+│    { role: "system",    content: "You are a helpful..." │
+│    },                                                   │
+│    { role: "user",      content: "What is 2+2?"        │
+│    },                                                   │
+│    { role: "assistant", content: "4"                    │
+│    },                                                   │
+│    { role: "user",      content: "Now multiply by 3"   │
+│    }                                                    │
+│  ]                                                      │
+│                                                         │
+│  → model reads ALL of this, generates the next response │
+└─────────────────────────────────────────────────────────┘
 ```
 
-#### Database Query & Schema Optimization
+The model does not have a session. It does not "know" it already answered the first question. It receives the entire list of messages and produces the next one. The chat interface is an illusion maintained by the client.
 
-```text
-Our {Database} queries are slow or returning inconsistent results. 
-- Provide recommendations to optimize our SQL/NoSQL queries.
-- Suggest any schema changes or indexing strategies.
-- Consider using {Tool/Plugin} (e.g., EXPLAIN ANALYZE, indexing advisors) if available.
-- Outline potential impacts on our {Framework} application.
+### Temperature: Controlled Randomness
 
-[PASTE SAMPLE QUERIES OR EXPLAIN SCHEMA HERE]
+You may have heard that LLMs are "non-deterministic." This is half true. The randomness is a design choice, not a flaw.
+
+At each step, the model predicts the probability of every possible next token. Temperature controls how it picks from those probabilities:
+
+```
+Prompt: "The capital of France is"
+
+Token probabilities:
+  "Paris"    → 92%
+  "Lyon"     → 3%
+  "a"        → 2%
+  "the"      → 1%
+  ...
+
+Temperature = 0:    Always picks "Paris" (highest probability)
+Temperature = 0.7:  Usually picks "Paris", sometimes surprises
+Temperature = 1.0:  More random, might pick "Lyon" or "a"
 ```
 
-#### Security Hardening & Audit
+For coding tasks, lower temperature is almost always better. You want predictable, correct output, not creative variation. Most coding agents run at low temperature by default.
 
-```text
-- Perform a security audit of our code, looking for common vulnerabilities (e.g., XSS, SQL injection, CSRF).
-- Suggest improvements or additional checks (e.g., using {Plugin/Tool}, adopting best practices like OWASP Top 10).
-- Propose a plan for ongoing vulnerability scanning and penetration testing.
+### Tokens, Not Characters
 
-[PASTE YOUR CODE OR SECURITY CONCERNS HERE]
+LLMs do not read characters or words. They read tokens. A token is roughly 3-4 characters in English, but it varies.
+
+```
+"Hello, world!"       → ["Hello", ",", " world", "!"]           = 4 tokens
+"def fibonacci(n):"   → ["def", " fibon", "acci", "(n", "):"]   = 5 tokens
+"東京"                 → ["東", "京"]                              = 2 tokens
 ```
 
-#### CI/CD Pipeline Enhancement
+This matters because:
 
-```text
-Our {Language}-{Framework} application needs a robust CI/CD pipeline.
-- Suggest improvements for code integration, building, testing, and deployment.
-- Integrate {Plugin/Tool} for automated code analysis, security scans, and artifact management.
-- Provide a high-level YAML or configuration file example, if relevant.
-- Explain how to handle rollbacks and environment-specific deployments.
+- **Context windows are measured in tokens.** When Claude says 200k context, that is 200k tokens, not characters. Roughly 150k words, or about 500 pages of text.
+- **You pay per token.** Both input and output. Reading a 5000-line file costs more than reading a 100-line file.
+- **Code is token-expensive.** Variable names, syntax, and whitespace all consume tokens. A 200-line function might cost more tokens than a 200-word paragraph.
+
+### Why This Matters for Agents
+
+Everything in the rest of this article builds on these basics:
+
+- **Agents are loops around a stateless function.** Every iteration, the agent re-sends the conversation plus new tool results. The context grows with every step.
+- **Context management is the core skill.** Since the model only sees what you send it, managing what goes into the context window is how you control the output quality.
+- **Fresh context beats long conversations.** Splitting work into research/plan/implement phases works because each phase starts with a clean, focused input instead of a bloated conversation history.
+- **Sub-agents protect the main context.** When a sub-agent does 15 grep searches, all that noise stays in the sub-agent's context. The main agent only sees a compact summary.
+
+If you remember one thing from this section: the LLM does not know anything you did not tell it. Everything else follows from that.
+
+## How Agents Actually Work
+
+I did an internal presentation at my company about how to write good agents, based on the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) series by [Dex Horthy](https://github.com/dexhorthy) (HumanLayer, YC24). I did not take all 12 factors because many of them are about building agent frameworks, which is not what most of us do day-to-day. We use agents, we do not build runtimes for them. Claude Code and Copilot control the runtime; we can partially control the tools and fully control the prompts.
+
+### The Agent Loop
+
+At its core, every agent is just this:
+
+```
+┌─────────────────────────────────────────────┐
+│                                             │
+│  ┌─────────┐    ┌──────────┐    ┌────────┐ │
+│  │         │    │          │    │        │ │
+│  │ Context ├───>│   LLM    ├───>│  Tool  │ │
+│  │ window  │    │ (decide  │    │  call  │ │
+│  │         │<───┤  next    │    │(execute│ │
+│  │         │    │  action) │    │ action)│ │
+│  └─────────┘    └──────────┘    └───┬────┘ │
+│       ^                             │      │
+│       │         result              │      │
+│       └─────────────────────────────┘      │
+│                                             │
+│              Repeat until "done"            │
+└─────────────────────────────────────────────┘
 ```
 
-#### Testing Strategy & Coverage Improvement
+**The problem:** after many iterations, the context window fills up. The agent starts looping on the same broken approach. It forgets what it tried. Even as models support longer context, focused prompts always work better.
 
-```text
-We use {Language}, {Framework}, and {Test Framework} in our QA.
-- Assess our current testing strategy and coverage.
-- Recommend additional test types (unit, integration, E2E) and how to implement them.
-- Suggest {Plugin/Tool} for coverage reports and test automation.
-- Provide sample test cases or configurations.
+### Four Components You Control
 
-[OPTIONAL: SHARE CODE OR TEST RESULTS HERE]
+| Component | What it is | What you control |
+|-----------|-----------|-----------------|
+| **Prompt** | Instructions for the LLM | Fully. You write it. |
+| **Context** | Accumulated history of steps and results | Partially. You shape what goes in. |
+| **Tools** | Actions the agent can take (read files, run commands, etc.) | Partially. You pick which tools are available. |
+| **Loop** | Keep going until done | Partially. You define when to pause/stop. |
+
+### Five Factors That Matter for Prompt Engineering
+
+From the original 12 factors, these five are most relevant when you write prompts for coding assistants:
+
+#### Factor 1: Natural Language Becomes Tool Calls
+
+Your words become actions. The prompt defines what tools are available and how to use them.
+
+```
+What you type:              What the agent actually does:
+─────────────               ─────────────────────────────
+"/commit"                   → git status
+                            → git diff
+                            → git add <files>
+                            → git commit -m "..."
+
+"find auth code"            → Grep: "auth"
+                            → Glob: **/auth/**
+                            → LS: src/services/auth/
+
+"explain the login flow"    → Read: src/auth/login.ts
+                            → Read: src/auth/middleware.ts
+                            → Trace calls between files
 ```
 
-####  API & Microservices Performance Review
+#### Factor 2: Own Your Prompts
 
-```text
-We have a microservices architecture built with {Language} on {Framework}. We are experiencing latency and potential bottlenecks in our API layer. 
-- Analyze our service-to-service communication, data serialization, and network overhead.
-- Propose optimizations (e.g., caching, asynchronous messaging, circuit breakers).
-- Recommend any {Plugin/Tool} for load testing and distributed tracing.
-- Provide a high-level diagram or explanation of the improved architecture.
+Do not copy-paste prompts without reading them. A prompt for React will not work for Spring Boot. If you cannot explain why each instruction is there, you do not own it.
 
-[OPTIONAL: DESCRIBE YOUR CURRENT MICROSERVICES SETUP]
+> "Our library gives you the best output!" ... "SHOW ME THE PROMPT."
+
+#### Factor 3: Own Your Context Window
+
+LLMs are stateless functions. Every call, you send the full context. The quality of the output depends on how you structure the input. Andrej Karpathy coined the term "context engineering" for this.
+
+```
+Context window (200k tokens):
+┌──────────────────────────────────────────────────────┐
+│ [system prompt] [documents] [conversation] [tools]   │
+│                                                      │
+│  40% used ✓ Good     │░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ │
+│  60% used ~ OK       │████████████░░░░░░░░░░░░░░░░│ │
+│  80% used ✗ Danger   │████████████████████░░░░░░░░│ │
+│  95% used ✗ Lost     │████████████████████████████│ │
+│                                                      │
+│  More noise = worse output                           │
+│  Focused context = better output                     │
+└──────────────────────────────────────────────────────┘
 ```
 
-### General scenarios
+#### Factor 7: Contact Humans with Tool Calls
 
-#### E-commerce Microservices Platform
+Build checkpoints into prompts so the agent knows when to stop and ask.
 
-```text
-Design an architecture for a high-traffic e-commerce platform with AI-driven product 
-recommendations. The platform should be based on microservices, deployed on 
-a cloud provider, and capable of handling seasonal spikes. We need to 
-incorporate a recommendation engine and a robust DevOps pipeline. Please 
-include details on the data flow, caching strategy, load balancing
-service-to-service communication, CI/CD, and QA testing approaches.
+```
+# From implement_plan.md
+# (https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/implement_plan.md):
+
+"Phase [N] Complete - Ready for Verification.
+ Automated checks passed:
+ - [x] Tests pass
+ - [x] Lint clean
+
+ Please perform manual verification:
+ - [ ] Feature works in UI
+ - [ ] No regressions
+
+ Let me know when complete so I can proceed to Phase [N+1]."
 ```
 
-#### Enterprise Data Lake & Analytics
+#### Factor 10: Small, Focused Agents
 
-```text
-Propose an end-to-end architecture for an enterprise data lake and analytics platform.
-We need to ingest data from multiple internal and external sources (IoT devices, CRM,
-social media APIs). The platform should support real-time data processing,
-transformations, and both structured and unstructured data. We also want to
-incorporate an ML pipeline for predictive analytics. Outline data storage options,
-the ETL/ELT process, security considerations, and how different teams can access
-the analytics layer.
+Instead of one big agent, create small agents that each do one specific thing.
+
+```
+BAD: One Universal Agent                GOOD: Focused Micro Agents
+┌─────────────────────────┐             ┌──────────────────┐
+│ Universal Researcher    │             │ codebase-locator │
+│                         │             │ Tools: Grep,     │
+│ Tools: ALL OF THEM      │             │   Glob, LS       │
+│                         │             │ Job: find files   │
+│ - Find files            │             └──────────────────┘
+│ - Analyze code          │             ┌──────────────────┐
+│ - Query database        │             │ codebase-analyzer│
+│ - Understand patterns   │             │ Tools: Read,     │
+│ - Synthesize findings   │             │   Grep, Glob, LS │
+│                         │             │ Job: explain code │
+│ 50+ steps               │             └──────────────────┘
+│ Huge context             │             ┌──────────────────┐
+│ Gets lost               │             │ web-researcher   │
+│                         │             │ Tools: WebSearch, │
+│                         │             │   WebFetch, Read  │
+│                         │             │ Job: find docs    │
+└─────────────────────────┘             └──────────────────┘
+
+                                        Each: 5-10 steps, stays focused
 ```
 
-#### Mobile Banking App with Security Emphasis
+### Practical Tips
 
-```text
-We’re designing a mobile banking application focusing on security and performance.
-Provide an architecture that ensures compliance with financial regulations (e.g.,
-PCI-DSS, GDPR) and includes advanced security measures like encryption, MFA, and
-fraud detection. Show how the backend services, data storage, and integration with
-third-party financial services should be structured. Also outline how to implement
-a robust QA strategy (including regression and penetration testing).
+These patterns come from real prompt engineering experience. They are not in the 12 Factors.
+
+#### Tip 1: Negative Instructions
+
+Tell the agent what NOT to do. This prevents drift.
+
+```
+# Bad: only positive instructions
+"Analyze the codebase and describe what you find."
+
+# Good: positive + negative instructions
+"Analyze the codebase and describe what you find.
+ DO NOT suggest improvements.
+ DO NOT perform root cause analysis.
+ DO NOT critique the implementation.
+ ONLY describe what exists, how it works, and how components interact."
 ```
 
-#### Global SaaS Platform with Multi-Region Deployment
+Without negative instructions, the agent starts "helping": suggesting improvements, critiquing code, going off on tangents. With them, it stays focused.
 
-```text
-We need a global SaaS application that runs in multiple regions (US, EU, APAC) with
-low latency and high availability. It should have a modular microservices design,
-support multi-tenancy, and automatically scale to handle diverse usage patterns.
-Provide details on the best database approach (SQL/NoSQL or hybrid), caching
-strategies, region failover, and recommended technology stack. Also discuss DevOps
-best practices for multi-region deployments.
+#### Tip 2: Output Templates
+
+Define exact format for consistent, parseable results.
+
+```
+# In codebase-analyzer.md
+# (https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-analyzer.md):
+
+## Analysis: [Component Name]
+
+### Overview
+[2-3 sentence summary]
+
+### Entry Points
+- `file.ts:45` - description of what's there
+
+### Core Implementation
+#### 1. [Step name] (`file.ts:15-32`)
+- What it does
+- How it connects to the next step
+
+### Data Flow
+1. Request arrives at `api/routes.ts:45`
+2. Routed to `handlers/webhook.ts:12`
+3. Validated at `handlers/webhook.ts:15-32`
 ```
 
-#### Legacy System Modernization
+Without a template, every response looks different. With a template, results are predictable and can be parsed by other agents.
 
-```text
-We have a large legacy monolithic application currently running on on-premises
-servers. We want to migrate to a cloud-native microservices or serverless
-architecture (whichever is more suitable) while maintaining business continuity.
-Describe a phased migration plan, highlight any refactoring needed, and propose
-a high-level architecture. Include details on data migration, integration with
-existing systems, and a testing and rollback strategy.
+#### Tip 3: Tool Selection Controls Capability
+
+Limit tools to limit what the agent CAN do. This is a physical constraint, not just instructions.
+
+| Agent | Tools | What it CAN do | What it CANNOT do |
+|-------|-------|----------------|-------------------|
+| [`codebase-locator`](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-locator.md) | Grep, Glob, LS | Find files | Read file contents |
+| [`codebase-analyzer`](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-analyzer.md) | Read, Grep, Glob, LS | Read and analyze | Run commands, edit files |
+| [`web-researcher`](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/web-search-researcher.md) | WebSearch, WebFetch, Read | Search the web | Modify local files |
+
+If the agent does not have the `Edit` tool, it physically cannot edit files. Not just "please don't", but "literally impossible."
+
+#### Tip 4: Read Before Spawn
+
+The orchestrator must understand context before delegating to sub-agents.
+
+```
+WRONG:                              RIGHT:
+
+User asks question                  User asks question
+  │                                   │
+  ├──> Spawn agent 1                  ├──> READ mentioned files first
+  ├──> Spawn agent 2                  │     (understand the full context)
+  └──> Spawn agent 3                  │
+                                      ├──> Plan sub-tasks based on
+  Agents get vague tasks              │     what you actually read
+  Results are unfocused               │
+                                      ├──> Spawn agent 1 (specific task)
+                                      ├──> Spawn agent 2 (specific task)
+                                      └──> Spawn agent 3 (specific task)
+
+                                      Agents get precise tasks
+                                      Results are focused
 ```
 
-#### AI Chatbot Integration
+#### Tip 5: No Open Questions
 
-```text
-Our customer support platform needs an AI chatbot integration. We want it to leverage
-a large language model and have a feedback loop for continuous improvement. Provide a
-reference architecture showing how the chatbot, NLP pipeline, and user data
-interact. Include a plan for logging conversations, training new models, and
-ensuring data privacy. Additionally, specify best practices for deployment and
-versioning of the chatbot service.
+Stop and ask instead of guessing. Five seconds to clarify saves hours of rework.
+
+```
+# From create_plan.md
+# (https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/create_plan.md):
+"If you encounter open questions during planning, STOP.
+ Research or ask for clarification immediately.
+ Do NOT write the plan with unresolved questions."
+
+# From implement_plan.md
+# (https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/implement_plan.md):
+"When things don't match the plan:
+ Issue in Phase [N]:
+   Expected: [what the plan says]
+   Found: [actual situation]
+   Why this matters: [explanation]
+
+ How should I proceed?"
 ```
 
-#### Observability & Monitoring Strategy 
+## Context Management Is Everything
 
-```text
-We want to establish a comprehensive observability and monitoring strategy across a
-microservices-based platform. Outline how logs, metrics, and traces should be
-collected and aggregated. Discuss the recommended tooling (e.g., Prometheus,
-Grafana, ELK stack, OpenTelemetry) and how alerts should be configured. Provide 
-an architecture diagram showing how each service publishes logs/metrics, how we
-set up dashboards, and how teams handle incident response.
+Dex Horthy wrote a detailed article called [Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/12-factor-agents) about why context management is the most important skill for working with AI coding tools. The key insight: LLMs are stateless functions. The context window is the ONLY lever you have to affect the quality of the output.
+
+### What Eats Up Your Context
+
+```
+Context window filling up:
+
+ [system prompt ████]
+ [user message ██]
+ [grep results ████████████████████]          <-- searching for files
+ [file contents ████████████████████████]     <-- reading code
+ [more grep ████████████]                     <-- more searching
+ [edit attempts ████████████████]             <-- trial and error
+ [test output ████████████████████████████]   <-- build logs
+ [error logs ████████████████]                <-- debugging
+ [more edits ████████████████████]            <-- fixes
+
+ ════════════════════════════════════════════
+ Context: 87% full. Agent is lost.
+ It forgot the original goal 40 messages ago.
 ```
 
-#### Healthcare Application with Compliance and Machine Learning
+### Frequent Intentional Compaction
 
-```text
-Create an architecture for a healthcare application that uses machine learning to
-predict patient readmissions. The system must comply with HIPAA and handle sensitive
-patient data securely. Include data ingestion, cleaning, ML model training, and
-deployment strategies. Highlight user authentication and authorization, encryption,
-auditing logs, and how you would handle compliance requirements (e.g., data
-residency, de-identification).
+Design your entire workflow around context management. Keep utilization in the 40-60% range. Split work into three phases:
+
+```
+Phase 1: RESEARCH                Phase 2: PLAN                Phase 3: IMPLEMENT
+(fresh context)                  (fresh context)              (fresh context)
+
+┌─────────────────┐              ┌─────────────────┐         ┌─────────────────┐
+│ Input:           │              │ Input:           │         │ Input:           │
+│ - ticket/issue   │              │ - research.md    │         │ - plan.md        │
+│ - codebase       │              │ - ticket/issue   │         │ - codebase       │
+│                  │              │                  │         │                  │
+│ Agent searches,  │              │ Agent creates    │         │ Agent follows    │
+│ reads, maps the  │              │ step-by-step     │         │ plan phase by    │
+│ codebase         │              │ implementation   │         │ phase            │
+│                  │              │ plan             │         │                  │
+│ Output:          │              │ Output:          │         │ Output:          │
+│ research.md      │              │ plan.md          │         │ working code     │
+└────────┬────────┘              └────────┬────────┘         └────────┬────────┘
+         │                                │                           │
+         v                                v                           v
+   ┌───────────┐                    ┌───────────┐               ┌───────────┐
+   │  HUMAN    │                    │  HUMAN    │               │  HUMAN    │
+   │  REVIEW   │                    │  REVIEW   │               │  REVIEW   │
+   │           │                    │           │               │           │
+   │ Is the    │                    │ Is the    │               │ Does the  │
+   │ research  │                    │ plan      │               │ code      │
+   │ correct?  │                    │ sound?    │               │ work?     │
+   └───────────┘                    └───────────┘               └───────────┘
+
+   Highest leverage!                High leverage!               Standard review
 ```
 
-#### Serverless Event-Driven Application
+Each phase starts with a **fresh context window**. The output of one phase becomes a compact input for the next. This is the core idea: instead of one long messy conversation, you have three focused sessions.
 
-```text
-We want a serverless, event-driven system to process real-time streams of user
-activity data (e.g., clicks, page views, location) and generate analytics dashboards.
-Propose a cloud-native architecture that uses managed services for event ingestion,
-processing, and storage. Detail how to handle sudden spikes in traffic, how the
-data flows through serverless functions, and how to integrate with a real-time
-analytics dashboard.
+### Sub-Agents for Context Control
+
+Sub-agents are not about role-playing. They are about using a fresh context window for searching and summarizing, so the main agent stays clean.
+
+```
+Main Agent (orchestrator)
+Context: 35% used
+┌──────────────────────────────────────────────┐
+│ system prompt + user question + sub-agent    │
+│ results (compact summaries)                  │
+│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
+└──────────────────────────────────────────────┘
+
+Sub-agent 1 (locator)     Sub-agent 2 (analyzer)     Sub-agent 3 (researcher)
+Uses own context           Uses own context            Uses own context
+┌────────────────┐         ┌────────────────┐         ┌────────────────┐
+│ 15 grep calls  │         │ reads 8 files  │         │ 5 web searches │
+│ 10 glob calls  │         │ traces 3 flows │         │ 3 page fetches │
+│ 80% used       │         │ 70% used       │         │ 60% used       │
+└───────┬────────┘         └───────┬────────┘         └───────┬────────┘
+        │                          │                          │
+        v                          v                          v
+  Returns: 15 lines          Returns: 40 lines          Returns: 20 lines
+  (file locations)           (code analysis)            (documentation)
+
+All that noise stays in sub-agent context.
+Main agent only sees the compact summaries.
 ```
 
-#### Custom CRM Platform with AI-driven Insights
+### The `.claude` Prompts
 
-```text
-We are building a custom CRM platform for a mid-sized organization. The CRM should
-track leads, manage customer interactions, and use AI/ML to provide lead-scoring and
-sales forecasting. Outline a modular, scalable architecture (microservices vs. a
-monolith?), the data model, and how to incorporate an ML pipeline. Specify
-recommended DevOps processes, QA strategies, and performance benchmarks to aim for.
+The prompts I reference throughout this article are taken from the [humanlayer/humanlayer/.claude](https://github.com/humanlayer/humanlayer/tree/main/.claude) repository. Originally written by the [CodeLayer](https://humanlayer.dev) team (Dex Horthy) for use with Claude Code inside the CodeLayer IDE. You can look at the originals to understand the full picture. They are a good example of "prompts as code" that you can version control, test, and share.
+
+| | File | What it does |
+|---|------|-------------|
+| **Agents** | [codebase-analyzer.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-analyzer.md) | Reads and explains code |
+| | [codebase-locator.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-locator.md) | Finds files (no Read tool!) |
+| | [codebase-pattern-finder.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-pattern-finder.md) | Finds code patterns |
+| | [web-search-researcher.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/web-search-researcher.md) | Searches the web |
+| **Commands** | [commit.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/commit.md) | Simple: analyze changes, commit |
+| | [create_plan.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/create_plan.md) | Workflow: research, plan, iterate |
+| | [describe_pr.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/describe_pr.md) | Simple: generate PR description |
+| | [implement_plan.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/implement_plan.md) | Workflow: execute plan phase by phase |
+| | [iterate_plan.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/iterate_plan.md) | Workflow: update existing plans |
+| | [research_codebase.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/research_codebase.md) | Orchestrator: spawn agents, synthesize |
+
+### Three Types of Prompts
+
+Not all prompts are the same. Here is how they differ (see [commit.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/commit.md), [implement_plan.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/implement_plan.md), [research_codebase.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/research_codebase.md)):
+
+```
+SIMPLE PROMPT (commit.md)
+─────────────────────────
+User: /commit
+  │
+  ├─ git status + diff
+  ├─ analyze changes
+  ├─ present plan ─────── Human: "looks good" ──── execute commits
+  │
+  One task. Linear. One human checkpoint.
+
+
+WORKFLOW PROMPT (implement_plan.md)
+───────────────────────────────────
+User: /implement plan.md
+  │
+  ├─ read plan
+  ├─ execute Phase 1
+  ├─ update checkboxes
+  ├─ ─── Human verifies Phase 1 ───
+  ├─ execute Phase 2
+  ├─ update checkboxes
+  ├─ ─── Human verifies Phase 2 ───
+  └─ ... until all phases done
+
+  Sequential. Multiple human gates. Persistent state (plan file).
+
+
+ORCHESTRATOR PROMPT (research_codebase.md)
+──────────────────────────────────────────
+User: /research "how does auth work?"
+  │
+  ├─ READ mentioned files first
+  │
+  ├─ Spawn sub-agents in parallel:
+  │   ├─ codebase-locator ──── finds files
+  │   ├─ codebase-analyzer ─── explains code
+  │   └─ web-researcher ────── finds docs
+  │
+  ├─ WAIT for all sub-agents
+  │
+  └─ Synthesize into research document
+
+  Delegates work. Parallel execution. Synthesis focus.
 ```
 
-# Codex
+| Type | Who does the work | Sub-agents | Human interaction |
+|------|------------------|------------|-------------------|
+| Simple | Agent directly | None | Confirm then execute |
+| Workflow | Agent, phase by phase | Optional | Gates between phases |
+| Orchestrator | Sub-agents | Core mechanism | Minimal (review synthesis) |
 
-## Agentic mode
-```text
-Can you refactor this [feature, class, component, part of the code]? You should ask questions
-to define goals of refactoring, or confirm the decision that you're suggesting. You should tell
-if you don't know if you don't know. Before proceeding, you must request code style from the user
-(i.e. remove comments, etc.). Be mindful about refactoring legacy, you must ask in advance if
-some legacy part should be kept intact or if refactoring should be done around legacy.
+**Rule of thumb:** Start simple. Add workflow when you need human checkpoints between phases. Add orchestrator when you need parallel research.
+
+## Writing Good Prompts for Existing Agents
+
+You cannot just tell the agent "use ticket NUMBER-123 and research." That is too vague. The agent will not know what to look for, what is important, or when to stop.
+
+### Bad vs. Good Prompts
+
+```
+BAD                                         GOOD
+───                                         ────
+
+"Research ticket ENG-1234"                  "Research the payment processing flow.
+                                             Focus on Stripe webhook handling.
+                                             I need to understand how payment
+                                             status gets updated in the database.
+                                             Relevant code: src/services/payments/
+                                             and src/api/webhooks/."
+
+"Fix the bug"                               "/create_plan eng_1234.md
+
+                                             Think about the migration strategy.
+                                             We cannot have downtime.
+                                             Look at how we handled PR #456."
+
+"Implement the feature"                     "/implement plan.md
+
+                                             Start with Phase 1 only.
+                                             Run tests after each change.
+                                             If something does not match the plan,
+                                             stop and tell me."
 ```
 
-## 🤝 Contribution
-I'd love to accept your contributions to this project. I use GitHub pull requests for this purpose. Consult [GitHub Help](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) for more information on using pull requests.
+### The Pattern
 
-## 🧡 Find this repository useful?
-Please support it by joining __[stargazers](https://github.com/xtenzQ/awesome-dev-chatgpt-prompts/stargazers)__ for this repository. :star:
+Every good prompt to an existing agent follows this structure:
+
+```
+┌──────────────────────────────────────────┐
+│  1. SCOPE: What exactly to work on       │
+│     "Research the payment processing     │
+│      flow in our codebase"               │
+│                                          │
+│  2. FOCUS: Where to look                 │
+│     "Relevant code is probably in        │
+│      src/services/payments/"             │
+│                                          │
+│  3. CONTEXT: What matters and why        │
+│     "We need to understand this because  │
+│      we are migrating to Stripe v3"      │
+│                                          │
+│  4. BOUNDARIES: When to stop or ask      │
+│     "If you find more than 3 services    │
+│      involved, stop and tell me before   │
+│      going deeper"                       │
+└──────────────────────────────────────────┘
+```
+
+The [prompts in `.claude/commands/`](https://github.com/humanlayer/humanlayer/tree/main/.claude/commands) already have good structure built in (negative instructions, output templates, step-by-step strategies, human checkpoints). Your job is to give them specific context to work with, not vague directions.
+
+### Anatomy of a Well-Written Agent Prompt
+
+Here is what makes the [prompts in `.claude/agents/`](https://github.com/humanlayer/humanlayer/tree/main/.claude/agents) effective. Using [`codebase-analyzer.md`](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-analyzer.md) as an example:
+
+```yaml
+---
+name: codebase-analyzer
+tools: Read, Grep, Glob, LS            # Limited tools = limited scope
+model: sonnet                           # Cheaper model for focused tasks
+---
+```
+
+```markdown
+# Role (one sentence)
+"You are a specialist at understanding HOW code works."
+
+# Negative instructions (prevent drift)
+"DO NOT suggest improvements"
+"DO NOT critique the implementation"
+"ONLY describe what exists"
+
+# Step-by-step strategy (how to do the job)
+Step 1: Read Entry Points
+Step 2: Follow the Code Path
+Step 3: Document Key Logic
+
+# Output template (consistent format)
+## Analysis: [Name]
+### Overview
+### Entry Points
+  - `file:line` - description
+### Core Implementation
+### Data Flow
+
+# Closing reminder
+"REMEMBER: You are a documentarian, not a critic."
+```
+
+This structure works because each part prevents a specific failure mode:
+- **Limited tools** prevent the agent from doing things outside its scope
+- **Negative instructions** prevent it from drifting into "helpful" suggestions
+- **Step-by-step strategy** prevents random, inconsistent analysis
+- **Output template** prevents unparseable responses
+- **Closing reminder** reinforces the constraints (LLMs pay attention to the end of prompts)
+
+## What AI Makes Possible
+
+I do not want to sound like a hype article, but there are things that are genuinely hard to do without AI tools:
+
+- **Navigating unfamiliar codebases.** Dex Horthy and a colleague shipped a PR to a 300k LOC Rust codebase they had never seen before. The research phase mapped the codebase, the plan targeted the right fix, and the implementation landed. Would it work without AI? Sure. Would it take days instead of hours? Probably.
+- **Parallel research.** You can spawn multiple focused agents to investigate different parts of the codebase at the same time. One finds files, another analyzes code, another checks the database schema. The orchestrator synthesizes everything.
+- **Consistent code generation.** Once you have a good plan, the implementation phase is straightforward. The agent follows the spec, and the code style matches your existing codebase because the agent read it first.
+- **Onboarding.** New team members can use research prompts to get up to speed on unfamiliar parts of the codebase. An intern at HumanLayer shipped 2 PRs on his first day and 10 on his 8th day.
+- **Maintaining mental alignment.** Instead of reading 2000 lines of code in a PR, you read 200 lines of a well-written implementation plan. You know what is being built and why.
+
+These are real benefits. They do not make you 10x faster at everything. But they make some previously painful tasks genuinely easier.
+
+## Credits and References
+
+This work is heavily based on and inspired by other people's work. I want to give proper credit.
+
+**[12-Factor Agents](https://github.com/humanlayer/12-factor-agents)** by [Dex Horthy](https://github.com/dexhorthy) ([HumanLayer](https://humanlayer.dev), YC24). The foundation for understanding how to build reliable AI agents. My article adapts 5 of the 12 factors for prompt engineering use. The original content is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+**[Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/12-factor-agents)** by Dex Horthy. The article about frequent intentional compaction and the research/plan/implement workflow.
+
+**[We Mourn Our Craft](https://nolanlawson.com/2026/02/07/we-mourn-our-craft/)** by Nolan Lawson. An honest and emotional piece about accepting the AI shift in software development.
+
+**[Vibe Coding Our Way to Disaster](https://www.arthropod.software/p/vibe-coding-our-way-to-disaster)** by Jake Nations. About the risks of unstructured AI coding, based on Rich Hickey's ideas about simplicity vs. ease.
+
+**[Context Engineering](https://x.com/karpathy/status/1937902205765607508)** - term coined by Andrej Karpathy for the art of providing all the context needed for a task to be plausibly solvable by an LLM.
+
+**The `.claude` prompts** in this repo are taken from [humanlayer/humanlayer/.claude](https://github.com/humanlayer/humanlayer/tree/main/.claude), originally created by the [CodeLayer](https://humanlayer.dev) team (Dex Horthy) for use with Claude Code inside the CodeLayer IDE.
+
+**[Specs Are the New Code](https://www.youtube.com/watch?v=8rABwKRsec4)** by Sean Grove. The idea that specifications will become the real source code.
+
+**[Stanford Study on AI's Impact on Developer Productivity](https://www.youtube.com/watch?v=tbDDYKRFjhk)** - research showing that AI tools sometimes reduce productivity in established codebases.
+
+## About Me
+
+I'm a software engineer who is currently incorporating AI-assisted development into the company I work at. I am still in the process of understanding agents and LLMs. This repository is my notes and thoughts, not a definitive guide.
+
+If you find mistakes or disagree with something, that is expected. I am learning, and this will evolve over time.
+
+## License
+
+Content in this repository is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), consistent with the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) content license.
+
+Code examples are licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
