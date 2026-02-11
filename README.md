@@ -19,11 +19,11 @@ I'm currently introducing AI-assisted development at the company I work at. This
 
 ## Why Should You Care
 
-Nolan Lawson [wrote a great piece](https://nolanlawson.com/2026/02/07/we-mourn-our-craft/) about the emotional side of this shift. He described it honestly: "The worst fact about these tools is that they work." He is not celebrating the new world, but he is also not resisting it.
+Nolan Lawson [wrote a great piece](https://nolanlawson.com/2026/02/07/we-mourn-our-craft/) about the emotional side of this shift. He described it honestly: "The worst fact about these tools is that they work." He's not celebrating the new world, but he's not resisting it either.
 
 Whether you like it or not, AI coding tools are changing how we work. Your junior colleagues are already using Cursor, Claude Code, Copilot. They write code faster. Not always better, but faster. And the tools keep improving.
 
-The question is not "should I use AI for coding?" anymore. The question is: how do I use it without making a mess?
+The question isn't "should I use AI for coding?" anymore. The question is: how do I use it without making a mess?
 
 ## The Risks Are Real
 
@@ -51,21 +51,21 @@ The key problems with naive AI coding:
 
 - **Context complexity becomes code complexity.** When you have long conversations with AI, corrections and clarifications pile up. The AI starts making connections between unrelated parts of the conversation. Your code becomes a reflection of that mess.
 - **AI amplifies your approach.** If you rush to code without understanding the problem, AI helps you build the wrong thing faster. If you think first, AI becomes a powerful implementation tool.
-- **Most critical bugs come from misunderstanding the problem, not from implementation errors.** This was true before AI, and it is even more true now when AI can generate hundreds of lines of code from a vague prompt.
+- **Most critical bugs come from misunderstanding the problem, not from implementation errors.** This was true before AI, and it's even more true now when AI can generate hundreds of lines of code from a vague prompt.
 - **The Stanford study** found that AI tools often lead to rework. Code shipped with AI one week gets rewritten next week. In large established codebases, AI can actually make developers less productive.
 
-This is not a reason to avoid AI tools. It is a reason to use them with discipline.
+This isn't a reason to avoid AI tools. It's a reason to use them with discipline.
 
 ## Engineering Skills Still Matter
 
-AI does not replace the need to understand your system. You still need to:
+AI doesn't replace the need to understand your system. You still need to:
 
 - Know how your codebase works before asking AI to change it
 - Review generated code with the same rigor as human-written code
 - Design systems that are simple, not just easy to generate
-- Understand when the AI is wrong (and it will be wrong sometimes)
+- Understand when the AI is wrong (and it'll be wrong sometimes)
 
-As Dex Horthy from [HumanLayer](https://humanlayer.dev) puts it in the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) guide: the best production AI agents are "comprised of mostly just software." The LLM is a powerful component, but the engineering around it is what makes it reliable.
+As Dex Horthy from [HumanLayer](https://humanlayer.dev) puts it in the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) guide: the best production AI agents are "comprised of mostly just software." The LLM is a powerful component, but it's the engineering around it that makes it reliable.
 
 ### The Leverage Pyramid
 
@@ -90,7 +90,7 @@ Where you spend your human attention matters. A mistake at the research level ca
         (review research and plans, not just code)
 ```
 
-You need to be able to read the research AI produces and tell when it is wrong. You need to be able to look at a plan and spot the flaw. The human review at research and planning stages is the highest-leverage intervention in the whole process.
+You need to be able to read the research AI produces and tell when it's wrong. You need to be able to look at a plan and spot the flaw. The human review at research and planning stages is the highest-leverage intervention in the whole process.
 
 ## Understanding LLMs
 
@@ -98,13 +98,13 @@ Before we talk about agents, it helps to understand what an LLM actually is.
 
 ### LLM Is a Stateless Function
 
-An LLM is a function. You give it text, it gives you text back. That is it.
+An LLM is a function. You give it text, it gives you text back. That's it.
 
 ```
 f(input_text) → output_text
 ```
 
-There is no memory between calls. There is no hidden state. Every time you send a message, the model sees the entire conversation from scratch. What feels like a "conversation" is actually your client re-sending the full history every single time.
+There's no memory between calls. There's no hidden state. Every time you send a message, the model sees the entire conversation from scratch. What feels like a "conversation" is actually your client re-sending the full history every single time.
 
 ```
 Call 1:  f("What is 2+2?")                                         → "4"
@@ -113,11 +113,11 @@ Call 3:  f("What is 2+2?" + "4" + "Now multiply by 3" + "12"
            + "What was the original number?")                       → "4"
 ```
 
-The model did not "remember" that the original number was 4. It saw the full conversation in the input and found the answer there. If you removed the earlier messages, it would have no idea.
+The model didn't "remember" that the original number was 4. It saw the full conversation in the input and found the answer there. If you removed the earlier messages, it would have no idea.
 
 This has practical consequences:
 
-- **Context is everything.** The model only knows what you put in the input. If you do not include it, it does not exist.
+- **Context is everything.** The model only knows what you put in the input. If you don't include it, it doesn't exist.
 - **Longer conversations degrade.** Every message adds tokens. At some point the input is so large that the model loses focus on what matters.
 - **You pay for every token, every time.** The full conversation is re-sent on each call. A 50-message conversation means message 1 has been sent 50 times.
 
@@ -144,7 +144,7 @@ When you type a message in ChatGPT or Claude, it looks like a simple chat. Behin
 └─────────────────────────────────────────────────────────┘
 ```
 
-The model does not have a session. It does not "know" it already answered the first question. It receives the entire list of messages and produces the next one. The chat interface is an illusion maintained by the client.
+The model doesn't have a session. It doesn't "know" it already answered the first question. It receives the entire list of messages and produces the next one. The chat interface is an illusion maintained by the client.
 
 ### Temperature: Controlled Randomness
 
@@ -171,7 +171,7 @@ For coding tasks, lower temperature is almost always better. You want predictabl
 
 ### Tokens, Not Characters
 
-LLMs do not read characters or words. They read tokens. A token is roughly 3-4 characters in English, but it varies.
+LLMs don't read characters or words. They read tokens. A token is roughly 3-4 characters in English, but it varies.
 
 ```
 "Hello, world!"       → ["Hello", ",", " world", "!"]           = 4 tokens
@@ -181,7 +181,7 @@ LLMs do not read characters or words. They read tokens. A token is roughly 3-4 c
 
 This matters because:
 
-- **Context windows are measured in tokens.** When Claude says 200k context, that is 200k tokens, not characters. Roughly 150k words, or about 500 pages of text.
+- **Context windows are measured in tokens.** When Claude says 200k context, that's 200k tokens, not characters. Roughly 150k words, or about 500 pages of text.
 - **You pay per token.** Both input and output. Reading a 5000-line file costs more than reading a 100-line file.
 - **Code is token-expensive.** Variable names, syntax, and whitespace all consume tokens. A 200-line function might cost more tokens than a 200-word paragraph.
 
@@ -194,11 +194,11 @@ Everything in the rest of this article builds on these basics:
 - **Fresh context beats long conversations.** Splitting work into research/plan/implement phases works because each phase starts with a clean, focused input instead of a bloated conversation history.
 - **Sub-agents protect the main context.** When a sub-agent does 15 grep searches, all that noise stays in the sub-agent's context. The main agent only sees a compact summary.
 
-If you remember one thing from this section: the LLM does not know anything you did not tell it. Everything else follows from that.
+If you remember one thing from this section: the LLM doesn't know anything you didn't tell it. Everything else follows from that.
 
 ## How Agents Actually Work
 
-I did an internal presentation at my company about how to write good agents, based on the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) series by [Dex Horthy](https://github.com/dexhorthy) (HumanLayer, YC24). I did not take all 12 factors because many of them are about building agent frameworks, which is not what most of us do day-to-day. We use agents, we do not build runtimes for them. Claude Code and Copilot control the runtime; we can partially control the tools and fully control the prompts.
+I did an internal presentation at my company about how to write good agents, based on the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) series by [Dex Horthy](https://github.com/dexhorthy) (HumanLayer, YC24). I didn't take all 12 factors because many of them are about building agent frameworks, which isn't what most of us do day-to-day. We use agents, we don't build runtimes for them. Claude Code and Copilot control the runtime; we can partially control the tools and fully control the prompts.
 
 ### The Agent Loop
 
@@ -260,7 +260,7 @@ What you type:              What the agent actually does:
 
 #### Factor 2: Own Your Prompts
 
-Do not copy-paste prompts without reading them. A prompt for React will not work for Spring Boot. If you cannot explain why each instruction is there, you do not own it.
+Don't copy-paste prompts without reading them. A prompt for React won't work for Spring Boot. If you can't explain why each instruction is there, you don't own it.
 
 > "Our library gives you the best output!" ... "SHOW ME THE PROMPT."
 
@@ -333,7 +333,7 @@ BAD: One Universal Agent                GOOD: Focused Micro Agents
 
 ### Practical Tips
 
-These patterns come from real prompt engineering experience. They are not in the 12 Factors.
+These patterns come from real prompt engineering experience. They're not in the 12 Factors.
 
 #### Tip 1: Negative Instructions
 
@@ -351,7 +351,7 @@ Tell the agent what NOT to do. This prevents drift.
  ONLY describe what exists, how it works, and how components interact."
 ```
 
-Without negative instructions, the agent starts "helping": suggesting improvements, critiquing code, going off on tangents. With them, it stays focused.
+Without negative instructions, the agent starts "helping": suggesting improvements, critiquing code, going off on tangents. With them, it stays focused. So be explicit about what you don't want.
 
 #### Tip 2: Output Templates
 
@@ -380,7 +380,7 @@ Define exact format for consistent, parseable results.
 3. Validated at `handlers/webhook.ts:15-32`
 ```
 
-Without a template, every response looks different. With a template, results are predictable and can be parsed by other agents.
+Without a template, every response looks different. But with a template, results are predictable and can be parsed by other agents.
 
 #### Tip 3: Tool Selection Controls Capability
 
@@ -392,7 +392,7 @@ Limit tools to limit what the agent CAN do. This is a physical constraint, not j
 | [`codebase-analyzer`](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-analyzer.md) | Read, Grep, Glob, LS | Read and analyze | Run commands, edit files |
 | [`web-researcher`](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/web-search-researcher.md) | WebSearch, WebFetch, Read | Search the web | Modify local files |
 
-If the agent does not have the `Edit` tool, it physically cannot edit files. Not just "please don't", but "literally impossible."
+If the agent doesn't have the `Edit` tool, it physically can't edit files. Not "please don't" but "literally impossible."
 
 #### Tip 4: Read Before Spawn
 
@@ -501,7 +501,7 @@ Each phase starts with a **fresh context window**. The output of one phase becom
 
 ### Sub-Agents for Context Control
 
-Sub-agents are not about role-playing. They are about using a fresh context window for searching and summarizing, so the main agent stays clean.
+Sub-agents aren't about role-playing. They're about using a fresh context window for searching and summarizing, so the main agent stays clean.
 
 ```
 Main Agent (orchestrator)
@@ -547,7 +547,7 @@ The prompts I reference throughout this article are taken from the [humanlayer/h
 
 ### Three Types of Prompts
 
-Not all prompts are the same. Here is how they differ (see [commit.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/commit.md), [implement_plan.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/implement_plan.md), [research_codebase.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/research_codebase.md)):
+Not all prompts are the same. Here's how they differ (see [commit.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/commit.md), [implement_plan.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/implement_plan.md), [research_codebase.md](https://github.com/humanlayer/humanlayer/blob/main/.claude/commands/research_codebase.md)):
 
 ```
 SIMPLE PROMPT (commit.md)
@@ -605,7 +605,7 @@ User: /research "how does auth work?"
 
 ## Writing Good Prompts for Existing Agents
 
-You cannot just tell the agent "use ticket NUMBER-123 and research." That is too vague. The agent will not know what to look for, what is important, or when to stop.
+You can't just tell the agent "use ticket NUMBER-123 and research." That's too vague. The agent won't know what to look for, what's important, or when to stop.
 
 ### Bad vs. Good Prompts
 
@@ -630,7 +630,7 @@ BAD                                         GOOD
 
                                              Start with Phase 1 only.
                                              Run tests after each change.
-                                             If something does not match the plan,
+                                             If something doesn't match the plan,
                                              stop and tell me."
 ```
 
@@ -663,7 +663,7 @@ The [prompts in `.claude/commands/`](https://github.com/humanlayer/humanlayer/tr
 
 ### Anatomy of a Well-Written Agent Prompt
 
-Here is what makes the [prompts in `.claude/agents/`](https://github.com/humanlayer/humanlayer/tree/main/.claude/agents) effective. Using [`codebase-analyzer.md`](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-analyzer.md) as an example:
+Here's what makes the [prompts in `.claude/agents/`](https://github.com/humanlayer/humanlayer/tree/main/.claude/agents) effective. Using [`codebase-analyzer.md`](https://github.com/humanlayer/humanlayer/blob/main/.claude/agents/codebase-analyzer.md) as an example:
 
 ```yaml
 ---
@@ -708,15 +708,15 @@ This structure works because each part prevents a specific failure mode:
 
 ## What AI Makes Possible
 
-I do not want to sound like a hype article, but there are things that are genuinely hard to do without AI tools:
+Some things are just hard to do without AI tools:
 
-- **Navigating unfamiliar codebases.** Dex Horthy and a colleague shipped a PR to a 300k LOC Rust codebase they had never seen before. The research phase mapped the codebase, the plan targeted the right fix, and the implementation landed. Would it work without AI? Sure. Would it take days instead of hours? Probably.
+- **Navigating unfamiliar codebases.** Dex Horthy and a colleague shipped a PR to a 300k LOC Rust codebase they'd never seen before. The research phase mapped the codebase, the plan targeted the right fix, and the implementation landed. Would it work without AI? Sure. Would it take days instead of hours? Probably.
 - **Parallel research.** You can spawn multiple focused agents to investigate different parts of the codebase at the same time. One finds files, another analyzes code, another checks the database schema. The orchestrator synthesizes everything.
-- **Consistent code generation.** Once you have a good plan, the implementation phase is straightforward. The agent follows the spec, and the code style matches your existing codebase because the agent read it first.
-- **Onboarding.** New team members can use research prompts to get up to speed on unfamiliar parts of the codebase. An intern at HumanLayer shipped 2 PRs on his first day and 10 on his 8th day.
-- **Maintaining mental alignment.** Instead of reading 2000 lines of code in a PR, you read 200 lines of a well-written implementation plan. You know what is being built and why.
+- Once you have a good plan, the implementation phase is straightforward. The agent follows the spec, and the code style matches your existing codebase because the agent read it first. **Consistent code generation** without the usual drift.
+- **Onboarding.** An intern at HumanLayer shipped 2 PRs on his first day and 10 on his 8th day. Research prompts let new team members get up to speed fast.
+- And there's **mental alignment**. Instead of reading 2000 lines of code in a PR, you read 200 lines of a well-written implementation plan. You know what's being built and why.
 
-These are real benefits. They do not make you 10x faster at everything. But they make some previously painful tasks genuinely easier.
+These are real benefits. They don't make you 10x faster at everything. But they make some previously painful tasks easier.
 
 ## Credits and References
 
@@ -740,9 +740,9 @@ This work is heavily based on and inspired by other people's work. I want to giv
 
 ## About Me
 
-I'm a software engineer who is currently incorporating AI-assisted development into the company I work at. I am still in the process of understanding agents and LLMs. This repository is my notes and thoughts, not a definitive guide.
+I'm a software engineer who is currently incorporating AI-assisted development into the company I work at. I'm still in the process of understanding agents and LLMs. This repository is my notes and thoughts, not a definitive guide.
 
-If you find mistakes or disagree with something, that is expected. I am learning, and this will evolve over time.
+If you find mistakes or disagree with something, that's expected. I'm learning, and this will evolve over time.
 
 ## License
 
