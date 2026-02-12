@@ -234,7 +234,7 @@ From the original 12 factors, these five are most relevant when you write prompt
 
 #### Factor 1: Natural Language Becomes Tool Calls
 
-Your words become structured tool calls. The LLM doesn't just "do stuff" — it translates your request into specific decisions: which tool to call, with what parameters. Then deterministic code picks up the structured output and executes it.
+Your words become structured tool calls. You type "find auth code," and the LLM decides: call Grep with pattern "auth", then Glob on `**/auth/**`. Specific tool, specific parameters, structured as JSON. Then deterministic code picks that up and runs it.
 
 ```
 What you type:              What the agent actually does:
@@ -255,15 +255,15 @@ What you type:              What the agent actually does:
 
 #### Factor 2: Own Your Prompts
 
-Don't outsource your prompt engineering to a black box. The original factor is about frameworks that hide the actual prompt behind abstractions like "role," "goal," and "personality" — great for getting started, but hard to tune for production. The principle: treat prompts as first-class code you write, test, iterate, and version.
+Don't outsource your prompt engineering to a black box. Some frameworks hide the actual prompt behind abstractions like "role," "goal," and "personality." Fine for prototyping. Hard to tune for production. You want to see and modify the exact tokens going to the model.
 
-For tools like Claude Code, you can't control the internal system prompt, but you can own everything else: `CLAUDE.md`, custom commands in `.claude/commands/`, agent definitions in `.claude/agents/`. Those are your prompts. Treat them like code.
+With Claude Code you can't control the internal system prompt. But you can own `CLAUDE.md`, custom commands in `.claude/commands/`, agent definitions in `.claude/agents/`. That's your prompt surface area. Write it, version it, test it.
 
 > "Our library gives you the best output!" ... "SHOW ME THE PROMPT."
 
 #### Factor 3: Own Your Context Window
 
-Everything is context engineering. As [covered above](#llm-is-a-stateless-function), LLMs are stateless functions — the only thing that affects output quality is the quality of the input. The original factor goes further: you don't have to use standard message-based formats. You can build custom context structures optimized for information density and token efficiency. Andrej Karpathy popularized the term "context engineering" for this — the art of filling the context window with exactly the right information.
+Everything is context engineering. As [covered above](#llm-is-a-stateless-function), LLMs are stateless functions. The only thing that affects output quality is the quality of the input. The original factor goes further: you don't have to stick with standard message-based formats. You can structure context however you want, pack more signal into fewer tokens. Andrej Karpathy popularized the term "context engineering" for this. Fill the context window with the right information, not just more information.
 
 ```
 Context window (200k tokens):
@@ -707,7 +707,7 @@ This structure works because each part prevents a specific failure mode:
 
 Some things are just hard to do without AI tools:
 
-- **Navigating unfamiliar codebases.** Dex Horthy first shipped a solo bug fix to [BAML](https://github.com/BoundaryML/baml), a 300k LOC Rust codebase he'd never worked in before. Then he and Vaibhav paired for 7 hours and shipped 35k LOC adding cancellation support and WASM compilation — features estimated at 3-5 days each for a senior engineer on the BAML team.
+- **Navigating unfamiliar codebases.** Dex Horthy shipped a solo bug fix to [BAML](https://github.com/BoundaryML/baml), a 300k LOC Rust codebase he'd never touched. Then he and Vaibhav paired for 7 hours and shipped 35k LOC (cancellation support + WASM compilation). The BAML team estimated each of those at 3-5 days for a senior engineer.
 - **Parallel research.** You can spawn multiple focused agents to investigate different parts of the codebase at the same time. One finds files, another analyzes code, another checks the database schema. The orchestrator synthesizes everything.
 - Once you have a good plan, the implementation phase is straightforward. The agent follows the spec, and the code style matches your existing codebase because the agent read it first. **Consistent code generation** without the usual drift.
 - **Onboarding.** An intern at HumanLayer shipped 2 PRs on his first day and 10 on his 8th day. Research prompts let new team members get up to speed fast.
