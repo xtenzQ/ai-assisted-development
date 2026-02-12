@@ -72,22 +72,22 @@ As [Dex Horthy](https://github.com/dexhorthy) ([HumanLayer](https://humanlayer.d
 Where you spend your human attention matters. A mistake at the research level cascades into everything below it.
 
 ```
-                    /\
-                   /  \          A bad line of RESEARCH
-                  / re \         = misunderstanding the codebase
-                 / search\       = thousands of bad lines of code
-                /----------\
-               /            \    A bad line of a PLAN
-              /    plan      \   = wrong approach
-             /                \  = hundreds of bad lines of code
-            /------------------\
-           /                    \
-          /   implementation     \  A bad line of CODE
-         /                        \ = a bad line of code
-        /__________________________\
+                /\
+               /  \             A bad line of RESEARCH
+              / re \            = misunderstanding the codebase
+             /search\           = thousands of bad lines of code
+            /--------\
+           /          \         A bad line of a PLAN
+          /    plan    \        = wrong approach
+         /              \       = hundreds of bad lines of code
+        /----------------\
+       /                  \
+      /  implementation    \    A bad line of CODE
+     /                      \   = a bad line of code
+    /________________________\
 
-        HUMAN EFFORT GOES HERE ^^^
-        (review research and plans, not just code)
+    HUMAN EFFORT GOES HERE ^^^
+    (review research and plans, not just code)
 ```
 
 You need to be able to read the research AI produces and tell when it's wrong. You need to be able to look at a plan and spot the flaw. The human review at research and planning stages is the highest-leverage intervention in the whole process.
@@ -132,11 +132,11 @@ When you type a message in ChatGPT or Claude, it looks like a simple chat. Behin
 │  messages: [                                            │
 │    { role: "system",    content: "You are a helpful..." │
 │    },                                                   │
-│    { role: "user",      content: "What is 2+2?"        │
+│    { role: "user",      content: "What is 2+2?"         │
 │    },                                                   │
 │    { role: "assistant", content: "4"                    │
 │    },                                                   │
-│    { role: "user",      content: "Now multiply by 3"   │
+│    { role: "user",      content: "Now multiply by 3"    │
 │    }                                                    │
 │  ]                                                      │
 │                                                         │
@@ -202,16 +202,16 @@ At its core, every agent is just this:
 ```
 ┌─────────────────────────────────────────────┐
 │                                             │
-│  ┌─────────┐    ┌──────────┐    ┌────────┐ │
-│  │         │    │          │    │        │ │
-│  │ Context ├───>│   LLM    ├───>│  Tool  │ │
-│  │ window  │    │ (decide  │    │  call  │ │
-│  │         │<───┤  next    │    │(execute│ │
-│  │         │    │  action) │    │ action)│ │
-│  └─────────┘    └──────────┘    └───┬────┘ │
-│       ^                             │      │
-│       │         result              │      │
-│       └─────────────────────────────┘      │
+│  ┌─────────┐    ┌──────────┐    ┌────────┐  │
+│  │         │    │          │    │        │  │
+│  │ Context ├───>│   LLM    ├───>│  Tool  │  │
+│  │ window  │    │ (decide  │    │  call  │  │
+│  │         │<───┤  next    │    │(execute│  │
+│  │         │    │  action) │    │ action)│  │
+│  └─────────┘    └──────────┘    └───┬────┘  │
+│       ^                             │       │
+│       │         result              │       │
+│       └─────────────────────────────┘       │
 │                                             │
 │              Repeat until "done"            │
 └─────────────────────────────────────────────┘
@@ -268,10 +268,10 @@ Context window (200k tokens):
 ┌──────────────────────────────────────────────────────┐
 │ [system prompt] [documents] [conversation] [tools]   │
 │                                                      │
-│  40% used ✓ Good     │░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ │
-│  60% used ~ OK       │████████████░░░░░░░░░░░░░░░░│ │
-│  80% used ✗ Danger   │████████████████████░░░░░░░░│ │
-│  95% used ✗ Lost     │████████████████████████████│ │
+│  40% used ✓ Good     │░░░░░░░░░░░░░░░░░░░░░░░░░░░░│  │
+│  60% used ~ OK       │████████████░░░░░░░░░░░░░░░░│  │
+│  80% used ✗ Danger   │████████████████████░░░░░░░░│  │
+│  95% used ✗ Lost     │████████████████████████████│  │
 │                                                      │
 │  More noise = worse output                           │
 │  Focused context = better output                     │
@@ -304,24 +304,24 @@ Instead of one big agent, create small agents that each do one specific thing.
 
 ```
 BAD: One Universal Agent                GOOD: Focused Micro Agents
-┌─────────────────────────┐             ┌──────────────────┐
-│ Universal Researcher    │             │ codebase-locator │
-│                         │             │ Tools: Grep,     │
-│ Tools: ALL OF THEM      │             │   Glob, LS       │
-│                         │             │ Job: find files   │
-│ - Find files            │             └──────────────────┘
-│ - Analyze code          │             ┌──────────────────┐
-│ - Query database        │             │ codebase-analyzer│
-│ - Understand patterns   │             │ Tools: Read,     │
-│ - Synthesize findings   │             │   Grep, Glob, LS │
-│                         │             │ Job: explain code │
-│ 50+ steps               │             └──────────────────┘
-│ Huge context             │             ┌──────────────────┐
-│ Gets lost               │             │ web-researcher   │
-│                         │             │ Tools: WebSearch, │
-│                         │             │   WebFetch, Read  │
-│                         │             │ Job: find docs    │
-└─────────────────────────┘             └──────────────────┘
+┌─────────────────────────┐             ┌────────────────────┐
+│ Universal Researcher    │             │ codebase-locator   │
+│                         │             │ Tools: Grep,       │
+│ Tools: ALL OF THEM      │             │   Glob, LS         │
+│                         │             │ Job: find files    │
+│ - Find files            │             └────────────────────┘
+│ - Analyze code          │             ┌────────────────────┐
+│ - Query database        │             │ codebase-analyzer  │
+│ - Understand patterns   │             │ Tools: Read,       │
+│ - Synthesize findings   │             │   Grep, Glob, LS   │
+│                         │             │ Job: explain code  │
+│ 50+ steps               │             └────────────────────┘
+│ Huge context            │             ┌────────────────────┐
+│ Gets lost               │             │ web-researcher     │
+│                         │             │ Tools: WebSearch,  │
+│                         │             │   WebFetch, Read   │
+│                         │             │ Job: find docs     │
+└─────────────────────────┘             └────────────────────┘
 
                                         Each: 5-10 steps, stays focused
 ```
@@ -463,20 +463,20 @@ Context window filling up:
 Design your entire workflow around context management. Keep utilization in the 40-60% range. Split work into three phases:
 
 ```
-Phase 1: RESEARCH                Phase 2: PLAN                Phase 3: IMPLEMENT
-(fresh context)                  (fresh context)              (fresh context)
+Phase 1: RESEARCH               Phase 2: PLAN               Phase 3: IMPLEMENT
+(fresh context)                  (fresh context)             (fresh context)
 
 ┌─────────────────┐              ┌─────────────────┐         ┌─────────────────┐
-│ Input:           │              │ Input:           │         │ Input:           │
-│ - ticket/issue   │              │ - research.md    │         │ - plan.md        │
-│ - codebase       │              │ - ticket/issue   │         │ - codebase       │
-│                  │              │                  │         │                  │
-│ Agent searches,  │              │ Agent creates    │         │ Agent follows    │
-│ reads, maps the  │              │ step-by-step     │         │ plan phase by    │
-│ codebase         │              │ implementation   │         │ phase            │
-│                  │              │ plan             │         │                  │
-│ Output:          │              │ Output:          │         │ Output:          │
-│ research.md      │              │ plan.md          │         │ working code     │
+│ Input:          │              │ Input:          │         │ Input:          │
+│ - ticket/issue  │              │ - research.md   │         │ - plan.md       │
+│ - codebase      │              │ - ticket/issue  │         │ - codebase      │
+│                 │              │                 │         │                 │
+│ Agent searches, │              │ Agent creates   │         │ Agent follows   │
+│ reads, maps the │              │ step-by-step    │         │ plan phase by   │
+│ codebase        │              │ implementation  │         │ phase           │
+│                 │              │ plan            │         │                 │
+│ Output:         │              │ Output:         │         │ Output:         │
+│ research.md     │              │ plan.md         │         │ working code    │
 └────────┬────────┘              └────────┬────────┘         └────────┬────────┘
          │                                │                           │
          v                                v                           v
@@ -504,7 +504,7 @@ Context: 35% used
 ┌──────────────────────────────────────────────┐
 │ system prompt + user question + sub-agent    │
 │ results (compact summaries)                  │
-│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
+│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
 └──────────────────────────────────────────────┘
 
 Sub-agent 1 (locator)     Sub-agent 2 (analyzer)     Sub-agent 3 (researcher)
