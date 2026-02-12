@@ -65,7 +65,7 @@ AI doesn't replace the need to understand your system. You still need to:
 - Design systems that are simple, not just easy to generate
 - Understand when the AI is wrong (and it'll be wrong sometimes)
 
-As Dex Horthy from [HumanLayer](https://humanlayer.dev) puts it in the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) guide: the best production AI agents are "comprised of mostly just software." The LLM is a powerful component, but it's the engineering around it that makes it reliable.
+As [Dex Horthy](https://github.com/dexhorthy) ([HumanLayer](https://humanlayer.dev)) puts it in [12-Factor Agents](https://github.com/humanlayer/12-factor-agents): the best production AI agents are "comprised of mostly just software." The LLM is a powerful component, but it's the engineering around it that makes it reliable.
 
 ### The Leverage Pyramid
 
@@ -187,18 +187,13 @@ This matters because:
 
 ### Why This Matters for Agents
 
-Everything in the rest of this article builds on these basics:
+Everything in the rest of this article builds on these basics. If you remember one thing from this section: **the LLM doesn't know anything you didn't tell it.** Everything else follows from that.
 
-- **Agents are loops around a stateless function.** Every iteration, the agent re-sends the conversation plus new tool results. The context grows with every step.
-- **Context management is the core skill.** Since the model only sees what you send it, managing what goes into the context window is how you control the output quality.
-- **Fresh context beats long conversations.** Splitting work into research/plan/implement phases works because each phase starts with a clean, focused input instead of a bloated conversation history.
-- **Sub-agents protect the main context.** When a sub-agent does 15 grep searches, all that noise stays in the sub-agent's context. The main agent only sees a compact summary.
-
-If you remember one thing from this section: the LLM doesn't know anything you didn't tell it. Everything else follows from that.
+The next sections cover how agents loop around this stateless function ([How Agents Actually Work](#how-agents-actually-work)) and why managing context is the most important skill you can develop ([Context Management Is Everything](#context-management-is-everything)).
 
 ## How Agents Actually Work
 
-I did an internal presentation at my company about how to write good agents, based on the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) series by [Dex Horthy](https://github.com/dexhorthy) (HumanLayer, YC24). I didn't take all 12 factors because many of them are about building agent frameworks, which isn't what most of us do day-to-day. We use agents, we don't build runtimes for them. Claude Code and Copilot control the runtime; we can partially control the tools and fully control the prompts.
+I did an internal presentation at my company about how to write good agents, based on [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) by Dex Horthy. I didn't take all 12 factors because many of them are about building agent frameworks, which isn't what most of us do day-to-day. We use agents, we don't build runtimes for them. Claude Code and Copilot control the runtime; we can partially control the tools and fully control the prompts.
 
 ### The Agent Loop
 
@@ -266,7 +261,7 @@ Don't copy-paste prompts without reading them. A prompt for React won't work for
 
 #### Factor 3: Own Your Context Window
 
-LLMs are stateless functions. Every call, you send the full context. The quality of the output depends on how you structure the input. Andrej Karpathy coined the term "context engineering" for this.
+As [covered above](#llm-is-a-stateless-function), every call sends the full context. The quality of the output depends on how you structure the input. Andrej Karpathy coined the term "context engineering" for this.
 
 ```
 Context window (200k tokens):
@@ -441,7 +436,7 @@ Stop and ask instead of guessing. Five seconds to clarify saves hours of rework.
 
 ## Context Management Is Everything
 
-Dex Horthy wrote a detailed article called [Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/12-factor-agents) about why context management is the most important skill for working with AI coding tools. The key insight: LLMs are stateless functions. The context window is the ONLY lever you have to affect the quality of the output.
+Dex Horthy's [Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/12-factor-agents) explains why context management is the most important skill for working with AI coding tools. The key insight: the context window is the only lever you have to affect the quality of the output.
 
 ### What Eats Up Your Context
 
@@ -530,7 +525,7 @@ Main agent only sees the compact summaries.
 
 ### The `.claude` Prompts
 
-The prompts I reference throughout this article are taken from the [humanlayer/humanlayer/.claude](https://github.com/humanlayer/humanlayer/tree/main/.claude) repository. Originally written by the [CodeLayer](https://humanlayer.dev) team (Dex Horthy) for use with Claude Code inside the CodeLayer IDE. You can look at the originals to understand the full picture. They are a good example of "prompts as code" that you can version control, test, and share.
+The prompts I reference throughout this article are from the [humanlayer/humanlayer/.claude](https://github.com/humanlayer/humanlayer/tree/main/.claude) repository. You can look at the originals to understand the full picture. They are a good example of "prompts as code" that you can version control, test, and share.
 
 | | File | What it does |
 |---|------|-------------|
@@ -732,7 +727,7 @@ This work is heavily based on and inspired by other people's work. I want to giv
 
 **[Context Engineering](https://x.com/karpathy/status/1937902205765607508)** - term coined by Andrej Karpathy for the art of providing all the context needed for a task to be plausibly solvable by an LLM.
 
-**The `.claude` prompts** in this repo are taken from [humanlayer/humanlayer/.claude](https://github.com/humanlayer/humanlayer/tree/main/.claude), originally created by the [CodeLayer](https://humanlayer.dev) team (Dex Horthy) for use with Claude Code inside the CodeLayer IDE.
+**The `.claude` prompts** referenced in this article are from [humanlayer/humanlayer/.claude](https://github.com/humanlayer/humanlayer/tree/main/.claude), created by Dex Horthy for use with Claude Code inside the [CodeLayer](https://humanlayer.dev) IDE.
 
 **[Specs Are the New Code](https://www.youtube.com/watch?v=8rABwKRsec4)** by Sean Grove. The idea that specifications will become the real source code.
 
