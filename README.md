@@ -733,12 +733,6 @@ This work is heavily based on and inspired by other people's work. I want to giv
 
 **[Stanford Study on AI's Impact on Developer Productivity](https://www.youtube.com/watch?v=tbDDYKRFjhk)** - research showing that AI tools sometimes reduce productivity in established codebases.
 
-## About Me
-
-I'm a software engineer who is currently incorporating AI-assisted development into the company I work at. I'm still in the process of understanding agents and LLMs. This repository is my notes and thoughts, not a definitive guide.
-
-If you find mistakes or disagree with something, that's expected. I'm learning, and this will evolve over time.
-
 ## License
 
 Content in this repository is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), consistent with the [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) content license.
