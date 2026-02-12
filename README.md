@@ -234,7 +234,7 @@ From the original 12 factors, these five are most relevant when you write prompt
 
 #### Factor 1: Natural Language Becomes Tool Calls
 
-Your words become actions. The prompt defines what tools are available and how to use them.
+Your words become structured tool calls. The LLM doesn't just "do stuff" — it translates your request into specific decisions: which tool to call, with what parameters. Then deterministic code picks up the structured output and executes it.
 
 ```
 What you type:              What the agent actually does:
@@ -255,13 +255,15 @@ What you type:              What the agent actually does:
 
 #### Factor 2: Own Your Prompts
 
-Don't copy-paste prompts without reading them. A prompt for React won't work for Spring Boot. If you can't explain why each instruction is there, you don't own it.
+Don't outsource your prompt engineering to a black box. The original factor is about frameworks that hide the actual prompt behind abstractions like "role," "goal," and "personality" — great for getting started, but hard to tune for production. The principle: treat prompts as first-class code you write, test, iterate, and version.
+
+For tools like Claude Code, you can't control the internal system prompt, but you can own everything else: `CLAUDE.md`, custom commands in `.claude/commands/`, agent definitions in `.claude/agents/`. Those are your prompts. Treat them like code.
 
 > "Our library gives you the best output!" ... "SHOW ME THE PROMPT."
 
 #### Factor 3: Own Your Context Window
 
-As [covered above](#llm-is-a-stateless-function), every call sends the full context. The quality of the output depends on how you structure the input. Andrej Karpathy coined the term "context engineering" for this.
+Everything is context engineering. As [covered above](#llm-is-a-stateless-function), LLMs are stateless functions — the only thing that affects output quality is the quality of the input. The original factor goes further: you don't have to use standard message-based formats. You can build custom context structures optimized for information density and token efficiency. Andrej Karpathy popularized the term "context engineering" for this — the art of filling the context window with exactly the right information.
 
 ```
 Context window (200k tokens):
@@ -436,7 +438,7 @@ Stop and ask instead of guessing. Five seconds to clarify saves hours of rework.
 
 ## Context Management Is Everything
 
-Dex Horthy's [Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/12-factor-agents) explains why context management is the most important skill for working with AI coding tools. The key insight: the context window is the only lever you have to affect the quality of the output.
+Dex Horthy's [Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents) explains why context management is the most important skill for working with AI coding tools. The key insight: the context window is the only lever you have to affect the quality of the output.
 
 ### What Eats Up Your Context
 
@@ -460,7 +462,7 @@ Context window filling up:
 
 ### Frequent Intentional Compaction
 
-Design your entire workflow around context management. Keep utilization in the 40-60% range. Split work into three phases:
+Design your entire workflow around context management. Keep utilization in the 40-60% range. Split work into roughly three phases (sometimes you skip research and go straight to planning, sometimes you do multiple research passes before you're ready):
 
 ```
 Phase 1: RESEARCH               Phase 2: PLAN               Phase 3: IMPLEMENT
@@ -705,7 +707,7 @@ This structure works because each part prevents a specific failure mode:
 
 Some things are just hard to do without AI tools:
 
-- **Navigating unfamiliar codebases.** Dex Horthy and a colleague shipped a PR to a 300k LOC Rust codebase they'd never seen before. The research phase mapped the codebase, the plan targeted the right fix, and the implementation landed. Would it work without AI? Sure. Would it take days instead of hours? Probably.
+- **Navigating unfamiliar codebases.** Dex Horthy first shipped a solo bug fix to [BAML](https://github.com/BoundaryML/baml), a 300k LOC Rust codebase he'd never worked in before. Then he and Vaibhav paired for 7 hours and shipped 35k LOC adding cancellation support and WASM compilation — features estimated at 3-5 days each for a senior engineer on the BAML team.
 - **Parallel research.** You can spawn multiple focused agents to investigate different parts of the codebase at the same time. One finds files, another analyzes code, another checks the database schema. The orchestrator synthesizes everything.
 - Once you have a good plan, the implementation phase is straightforward. The agent follows the spec, and the code style matches your existing codebase because the agent read it first. **Consistent code generation** without the usual drift.
 - **Onboarding.** An intern at HumanLayer shipped 2 PRs on his first day and 10 on his 8th day. Research prompts let new team members get up to speed fast.
@@ -719,13 +721,13 @@ This work is heavily based on and inspired by other people's work. I want to giv
 
 **[12-Factor Agents](https://github.com/humanlayer/12-factor-agents)** by [Dex Horthy](https://github.com/dexhorthy) ([HumanLayer](https://humanlayer.dev), YC24). The foundation for understanding how to build reliable AI agents. My article adapts 5 of the 12 factors for prompt engineering use. The original content is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
-**[Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/12-factor-agents)** by Dex Horthy. The article about frequent intentional compaction and the research/plan/implement workflow.
+**[Advanced Context Engineering for Coding Agents](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents)** by Dex Horthy. The article about frequent intentional compaction and the research/plan/implement workflow.
 
 **[We Mourn Our Craft](https://nolanlawson.com/2026/02/07/we-mourn-our-craft/)** by Nolan Lawson. An honest and emotional piece about accepting the AI shift in software development.
 
 **[Vibe Coding Our Way to Disaster](https://www.arthropod.software/p/vibe-coding-our-way-to-disaster)** by Jake Nations. About the risks of unstructured AI coding, based on Rich Hickey's ideas about simplicity vs. ease.
 
-**[Context Engineering](https://x.com/karpathy/status/1937902205765607508)** - term coined by Andrej Karpathy for the art of providing all the context needed for a task to be plausibly solvable by an LLM.
+**[Context Engineering](https://x.com/karpathy/status/1937902205765607626)** - term popularized by Andrej Karpathy for the art of providing all the context needed for a task to be plausibly solvable by an LLM.
 
 **The `.claude` prompts** referenced in this article are from [humanlayer/humanlayer/.claude](https://github.com/humanlayer/humanlayer/tree/main/.claude), created by Dex Horthy for use with Claude Code inside the [CodeLayer](https://humanlayer.dev) IDE.
 
